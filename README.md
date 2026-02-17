@@ -140,13 +140,13 @@ Options:
 - `--all`
 - `--no-stash`
 - `--arg <ARG>`
-- `--graph-style <unicode|ascii>` (default: `ascii`)
+- `--graph-style <unicode|ascii>` (default: `unicode`)
 - `--max-patch-lines <N>` (default: `0` = unlimited)
 
 Example:
 
 ```powershell
-cargo run -p gitgraph-cli -- tui --repo D:\REALPROJECTS\GitGraph --graph-style ascii --max-patch-lines 2500 --limit 900
+cargo run -p gitgraph-cli -- tui --repo D:\REALPROJECTS\GitGraph --graph-style unicode --max-patch-lines 2500 --limit 900
 ```
 
 ### `search`

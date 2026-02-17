@@ -1408,7 +1408,11 @@ impl<'a> TuiApp<'a> {
 
 fn build_commit_line(row: &GraphRow, style: GraphStyle) -> Line<'static> {
     let mut spans = build_graph_spans(row, style);
-    spans.push(Span::raw("  "));
+    let graph_gap = match style {
+        GraphStyle::Unicode => "   ",
+        GraphStyle::Ascii => "  ",
+    };
+    spans.push(Span::raw(graph_gap));
 
     let refs = if row.refs.is_empty() {
         String::new()
@@ -1476,37 +1480,82 @@ fn build_graph_spans(row: &GraphRow, style: GraphStyle) -> Vec<Span<'static>> {
         .max()
         .unwrap_or(row.lane);
     let lane_count = max(max(row.active_lane_count, row.lane + 1), max_edge_lane + 1);
+    match style {
+        GraphStyle::Unicode => build_graph_spans_unicode(row, lane_count),
+        GraphStyle::Ascii => build_graph_spans_ascii(row, lane_count),
+    }
+}
+
+fn build_graph_spans_unicode(row: &GraphRow, lane_count: usize) -> Vec<Span<'static>> {
+    let mut symbols = vec![' '; lane_count];
+    let mut styles = vec![Style::default().fg(Color::DarkGray); lane_count];
+
+    for lane in 0..lane_count {
+        if lane < row.active_lane_count {
+            symbols[lane] = '│';
+            styles[lane] = Style::default()
+                .fg(lane_color(lane))
+                .add_modifier(Modifier::DIM);
+        }
+    }
+
+    for edge in row.edges.iter().filter(|e| e.to_lane != row.lane) {
+        let from = row.lane;
+        let to = edge.to_lane;
+        if to < from {
+            symbols[to] = '╭';
+            styles[to] = Style::default()
+                .fg(lane_color(to))
+                .add_modifier(Modifier::BOLD);
+            for lane in (to + 1)..from {
+                overlay_horizontal_lane(&mut symbols, &mut styles, lane, lane_color(from));
+            }
+        } else if to > from {
+            symbols[to] = '╮';
+            styles[to] = Style::default()
+                .fg(lane_color(to))
+                .add_modifier(Modifier::BOLD);
+            for lane in (from + 1)..to {
+                overlay_horizontal_lane(&mut symbols, &mut styles, lane, lane_color(from));
+            }
+        }
+    }
+
+    symbols[row.lane] = '●';
+    styles[row.lane] = Style::default()
+        .fg(lane_color(row.lane))
+        .add_modifier(Modifier::BOLD);
+
     let mut out = Vec::with_capacity(lane_count.saturating_mul(2).saturating_add(2));
+    for lane in 0..lane_count {
+        if lane > 0 {
+            out.push(Span::styled("  ", Style::default().fg(Color::DarkGray)));
+        }
+        out.push(Span::styled(symbols[lane].to_string(), styles[lane]));
+    }
+    out
+}
 
-    let (node_char, line_char, left_edge, right_edge, spacer, connector) = match style {
-        GraphStyle::Unicode => ('●', '│', '╱', '╲', '·', '┆'),
-        GraphStyle::Ascii => ('o', '|', '/', '\\', ':', '|'),
-    };
-
+fn build_graph_spans_ascii(row: &GraphRow, lane_count: usize) -> Vec<Span<'static>> {
+    let mut out = Vec::with_capacity(lane_count.saturating_mul(2).saturating_add(2));
     for lane in 0..lane_count {
         let color = lane_color(lane);
         let (ch, style) = if lane == row.lane {
-            (
-                node_char,
-                Style::default().fg(color).add_modifier(Modifier::BOLD),
-            )
+            ('o', Style::default().fg(color).add_modifier(Modifier::BOLD))
         } else if row
             .edges
             .iter()
             .any(|e| e.to_lane == lane && e.to_lane != row.lane)
         {
             if lane < row.lane {
-                (left_edge, Style::default().fg(color))
+                ('/', Style::default().fg(color))
             } else {
-                (right_edge, Style::default().fg(color))
+                ('\\', Style::default().fg(color))
             }
         } else if lane < row.active_lane_count {
-            (
-                line_char,
-                Style::default().fg(color).add_modifier(Modifier::DIM),
-            )
+            ('|', Style::default().fg(color).add_modifier(Modifier::DIM))
         } else {
-            (spacer, Style::default().fg(Color::DarkGray))
+            (' ', Style::default().fg(Color::DarkGray))
         };
         if lane > 0 {
             out.push(Span::styled(" ", Style::default().fg(Color::DarkGray)));
@@ -1514,12 +1563,20 @@ fn build_graph_spans(row: &GraphRow, style: GraphStyle) -> Vec<Span<'static>> {
         out.push(Span::styled(ch.to_string(), style));
     }
     if !row.parents.is_empty() {
-        out.push(Span::styled(
-            connector.to_string(),
-            Style::default().fg(Color::DarkGray),
-        ));
+        out.push(Span::styled("|", Style::default().fg(Color::DarkGray)));
     }
     out
+}
+
+fn overlay_horizontal_lane(symbols: &mut [char], styles: &mut [Style], lane: usize, color: Color) {
+    let next = match symbols[lane] {
+        '│' => '┼',
+        '╭' | '╮' => '┬',
+        '┼' | '┬' | '─' => symbols[lane],
+        _ => '─',
+    };
+    symbols[lane] = next;
+    styles[lane] = Style::default().fg(color).add_modifier(Modifier::DIM);
 }
 
 fn lane_color(lane: usize) -> Color {

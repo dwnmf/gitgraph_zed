@@ -76,7 +76,7 @@ struct TuiCmd {
     no_stash: bool,
     #[arg(long = "arg")]
     arg: Vec<String>,
-    #[arg(long, value_enum, default_value_t = tui::GraphStyle::Ascii)]
+    #[arg(long, value_enum, default_value_t = tui::GraphStyle::Unicode)]
     graph_style: tui::GraphStyle,
     #[arg(long, default_value_t = 0)]
     max_patch_lines: usize,
@@ -91,7 +91,7 @@ impl Default for TuiCmd {
             all: false,
             no_stash: false,
             arg: Vec::new(),
-            graph_style: tui::GraphStyle::Ascii,
+            graph_style: tui::GraphStyle::Unicode,
             max_patch_lines: 0,
         }
     }
