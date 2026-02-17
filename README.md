@@ -7,6 +7,9 @@ It includes:
 - `gitlg-cli`: terminal commands and interactive TUI (`gitgraph`).
 - `gitlg-zed`: Zed extension (Wasm) with slash commands.
 
+<img width="3417" height="1339" alt="image" src="https://github.com/user-attachments/assets/8b4c403c-b544-42c9-aaf1-8405a7c19f8c" />
+
+
 ## Features
 
 - Fast commit graph loading (`graph`, `tui`)
