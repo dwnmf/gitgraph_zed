@@ -1,10 +1,10 @@
-id = "gitgraph-zed"
-name = "GitGraph Zed"
+id = "gitgraph"
+name = "GitGraph"
 description = "Git graph and git actions powered by GitGraph core"
 version = "0.1.0"
 schema_version = 1
 authors = ["GitGraph Team"]
-repository = "https://github.com/dwnmf/GitTree_Zed"
+repository = "https://github.com/dwnmf/gitgraph_zed"
 
 [slash_commands.gitgraph-log]
 description = "Show recent git history graph summary for the current worktree"
