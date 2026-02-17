@@ -1,0 +1,51 @@
+[
+  {
+    "label": "GitLG TUI",
+    "command": "cargo",
+    "args": [
+      "run",
+      "-q",
+      "-p",
+      "gitlg-cli",
+      "--",
+      "tui",
+      "--repo",
+      "$ZED_WORKTREE_ROOT",
+      "--graph-style",
+      "ascii",
+      "--max-patch-lines",
+      "2500",
+      "--limit",
+      "900"
+    ],
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "never"
+  },
+  {
+    "label": "GitLG TUI (release)",
+    "command": "cargo",
+    "args": [
+      "run",
+      "--release",
+      "-q",
+      "-p",
+      "gitlg-cli",
+      "--",
+      "tui",
+      "--repo",
+      "$ZED_WORKTREE_ROOT",
+      "--graph-style",
+      "ascii",
+      "--max-patch-lines",
+      "3500",
+      "--limit",
+      "2000"
+    ],
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "never"
+  }
+]

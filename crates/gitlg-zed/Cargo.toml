@@ -1,0 +1,15 @@
+[package]
+name = "gitlg-zed"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+gitlg-core = { path = "../gitlg-core" }
+serde.workspace = true
+serde_json.workspace = true
+shlex.workspace = true
+zed_extension_api = "0.7.0"
+
+[lib]
+crate-type = ["cdylib"]
