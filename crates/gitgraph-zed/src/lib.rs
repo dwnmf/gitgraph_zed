@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
-use gitlg_core::log_parser::{build_graph_rows, parse_git_log_records};
-use gitlg_core::{
+use gitgraph_core::log_parser::{build_graph_rows, parse_git_log_records};
+use gitgraph_core::{
     ActionCatalog, ActionContext, ActionRequest, ActionScope, CommitSearchQuery, GitLgError,
     filter_commits,
 };
@@ -10,9 +10,33 @@ use zed_extension_api as zed;
 const DEFAULT_LIMIT: usize = 100;
 const MAX_LIMIT: usize = 1_000;
 
-struct GitLgZedExtension;
+fn is_log_command(name: &str) -> bool {
+    matches!(name, "gitgraph-log" | "gitlg-log")
+}
 
-impl zed::Extension for GitLgZedExtension {
+fn is_search_command(name: &str) -> bool {
+    matches!(name, "gitgraph-search" | "gitlg-search")
+}
+
+fn is_actions_command(name: &str) -> bool {
+    matches!(name, "gitgraph-actions" | "gitlg-actions")
+}
+
+fn is_action_command(name: &str) -> bool {
+    matches!(name, "gitgraph-action" | "gitlg-action")
+}
+
+fn is_blame_command(name: &str) -> bool {
+    matches!(name, "gitgraph-blame" | "gitlg-blame")
+}
+
+fn is_tips_command(name: &str) -> bool {
+    matches!(name, "gitgraph-tips" | "gitlg-tips")
+}
+
+struct GitGraphZedExtension;
+
+impl zed::Extension for GitGraphZedExtension {
     fn new() -> Self {
         Self
     }
@@ -22,7 +46,7 @@ impl zed::Extension for GitLgZedExtension {
         command: zed::SlashCommand,
         _args: Vec<String>,
     ) -> zed::Result<Vec<zed::SlashCommandArgumentCompletion>, String> {
-        if command.name == "gitlg-log" || command.name == "gitlg-search" {
+        if is_log_command(command.name.as_str()) || is_search_command(command.name.as_str()) {
             let mut items = vec![
                 zed::SlashCommandArgumentCompletion {
                     label: "limit=25".to_string(),
@@ -40,7 +64,7 @@ impl zed::Extension for GitLgZedExtension {
                     run_command: false,
                 },
             ];
-            if command.name == "gitlg-search" {
+            if is_search_command(command.name.as_str()) {
                 items.push(zed::SlashCommandArgumentCompletion {
                     label: "path=src/main.rs".to_string(),
                     new_text: "path=src/main.rs".to_string(),
@@ -49,7 +73,7 @@ impl zed::Extension for GitLgZedExtension {
             }
             return Ok(items);
         }
-        if command.name == "gitlg-action" {
+        if is_action_command(command.name.as_str()) {
             let completions = ActionCatalog::with_defaults()
                 .templates
                 .iter()
@@ -61,7 +85,7 @@ impl zed::Extension for GitLgZedExtension {
                 .collect();
             return Ok(completions);
         }
-        if command.name == "gitlg-blame" {
+        if is_blame_command(command.name.as_str()) {
             return Ok(vec![
                 zed::SlashCommandArgumentCompletion {
                     label: "README.md 1".to_string(),
@@ -91,19 +115,30 @@ impl zed::Extension for GitLgZedExtension {
             )
         })?;
         let root = worktree.root_path();
-        match command.name.as_str() {
-            "gitlg-log" => run_gitlg_log(&root, args),
-            "gitlg-search" => run_gitlg_search(&root, args),
-            "gitlg-actions" => run_gitlg_actions(),
-            "gitlg-action" => run_gitlg_action(&root, args),
-            "gitlg-blame" => run_gitlg_blame(&root, args),
-            "gitlg-tips" => run_gitlg_tips(),
-            _ => Err(format!("unsupported slash command: {}", command.name)),
+        let command_name = command.name.as_str();
+        if is_log_command(command_name) {
+            return run_gitgraph_log(&root, args);
         }
+        if is_search_command(command_name) {
+            return run_gitgraph_search(&root, args);
+        }
+        if is_actions_command(command_name) {
+            return run_gitgraph_actions();
+        }
+        if is_action_command(command_name) {
+            return run_gitgraph_action(&root, args);
+        }
+        if is_blame_command(command_name) {
+            return run_gitgraph_blame(&root, args);
+        }
+        if is_tips_command(command_name) {
+            return run_gitgraph_tips();
+        }
+        Err(format!("unsupported slash command: {}", command_name))
     }
 }
 
-fn run_gitlg_log(repo_root: &str, args: Vec<String>) -> Result<zed::SlashCommandOutput, String> {
+fn run_gitgraph_log(repo_root: &str, args: Vec<String>) -> Result<zed::SlashCommandOutput, String> {
     let limit = parse_limit_arg(args.first().map(String::as_str))?;
     let output = run_git_log(repo_root, limit)?;
     let rows = build_graph_rows(
@@ -114,10 +149,13 @@ fn run_gitlg_log(repo_root: &str, args: Vec<String>) -> Result<zed::SlashCommand
         &rows,
         &format!("Showing {} commit(s)", rows.len()),
     );
-    Ok(build_output(text, "GitLG graph"))
+    Ok(build_output(text, "GitGraph graph"))
 }
 
-fn run_gitlg_search(repo_root: &str, args: Vec<String>) -> Result<zed::SlashCommandOutput, String> {
+fn run_gitgraph_search(
+    repo_root: &str,
+    args: Vec<String>,
+) -> Result<zed::SlashCommandOutput, String> {
     let parsed = parse_search_args(args)?;
     let output = run_git_log(repo_root, parsed.limit)?;
     let rows = build_graph_rows(
@@ -142,15 +180,15 @@ fn run_gitlg_search(repo_root: &str, args: Vec<String>) -> Result<zed::SlashComm
             rows.len()
         ),
     );
-    Ok(build_output(text, "GitLG search"))
+    Ok(build_output(text, "GitGraph search"))
 }
 
 fn filter_rows_by_file_contents(
     repo_root: &str,
-    rows: &[gitlg_core::GraphRow],
+    rows: &[gitgraph_core::GraphRow],
     search: &CommitSearchQuery,
     file_path: &str,
-) -> Result<Vec<gitlg_core::GraphRow>, String> {
+) -> Result<Vec<gitgraph_core::GraphRow>, String> {
     if rows.is_empty() || search.text.trim().is_empty() {
         return Ok(rows.to_vec());
     }
@@ -196,10 +234,10 @@ fn filter_rows_by_file_contents(
         .collect())
 }
 
-fn run_gitlg_actions() -> Result<zed::SlashCommandOutput, String> {
+fn run_gitgraph_actions() -> Result<zed::SlashCommandOutput, String> {
     let catalog = ActionCatalog::with_defaults();
     let mut text = String::new();
-    text.push_str("# GitLG actions\n\n");
+    text.push_str("# GitGraph actions\n\n");
     for scope in ActionScope::all() {
         let templates = catalog.templates_for_scope(*scope);
         text.push_str(&format!("## {} ({})\n", scope.as_str(), templates.len()));
@@ -213,10 +251,13 @@ fn run_gitlg_actions() -> Result<zed::SlashCommandOutput, String> {
         }
         text.push('\n');
     }
-    Ok(build_output(text, "GitLG actions"))
+    Ok(build_output(text, "GitGraph actions"))
 }
 
-fn run_gitlg_action(repo_root: &str, args: Vec<String>) -> Result<zed::SlashCommandOutput, String> {
+fn run_gitgraph_action(
+    repo_root: &str,
+    args: Vec<String>,
+) -> Result<zed::SlashCommandOutput, String> {
     let parsed = parse_action_args(args)?;
     let catalog = ActionCatalog::with_defaults();
     let request = ActionRequest {
@@ -245,7 +286,7 @@ fn run_gitlg_action(repo_root: &str, args: Vec<String>) -> Result<zed::SlashComm
     }
 
     let mut text = String::new();
-    text.push_str(&format!("# GitLG action: `{}`\n\n", resolved.id));
+    text.push_str(&format!("# GitGraph action: `{}`\n\n", resolved.id));
     text.push_str(&format!("Command: `git {}`\n", resolved.command_line));
     text.push_str(&format!("Exit: `{}`\n\n", status));
     if !output.stdout.is_empty() {
@@ -263,10 +304,13 @@ fn run_gitlg_action(repo_root: &str, args: Vec<String>) -> Result<zed::SlashComm
     if output.stdout.is_empty() && output.stderr.is_empty() {
         text.push_str("(no output)\n");
     }
-    Ok(build_output(text, "GitLG action"))
+    Ok(build_output(text, "GitGraph action"))
 }
 
-fn run_gitlg_blame(repo_root: &str, args: Vec<String>) -> Result<zed::SlashCommandOutput, String> {
+fn run_gitgraph_blame(
+    repo_root: &str,
+    args: Vec<String>,
+) -> Result<zed::SlashCommandOutput, String> {
     let (file, line) = parse_blame_args(args)?;
     let out = run_git_command(
         repo_root,
@@ -291,24 +335,24 @@ fn run_gitlg_blame(repo_root: &str, args: Vec<String>) -> Result<zed::SlashComma
         line,
         &String::from_utf8_lossy(&out.stdout),
     );
-    Ok(build_output(text, "GitLG blame"))
+    Ok(build_output(text, "GitGraph blame"))
 }
 
-fn run_gitlg_tips() -> Result<zed::SlashCommandOutput, String> {
+fn run_gitgraph_tips() -> Result<zed::SlashCommandOutput, String> {
     let text = [
-        "# GitLG tips",
+        "# GitGraph tips",
         "",
-        "- `/gitlg-log [limit]` - show recent graph summary",
-        "- `/gitlg-search [limit=200] [path=src/file.rs] query` - search history",
-        "- `/gitlg-actions` - list action ids",
-        "- `/gitlg-action <id> KEY=VALUE +opt:<option-id>` - run action",
-        "- `/gitlg-blame <path> <line>` - single-line blame",
+        "- `/gitgraph-log [limit]` - show recent graph summary",
+        "- `/gitgraph-search [limit=200] [path=src/file.rs] query` - search history",
+        "- `/gitgraph-actions` - list action ids",
+        "- `/gitgraph-action <id> KEY=VALUE +opt:<option-id>` - run action",
+        "- `/gitgraph-blame <path> <line>` - single-line blame",
         "",
         "For full-screen interactive graph use CLI TUI in terminal:",
         "`gitgraph`",
     ]
     .join("\n");
-    Ok(build_output(text, "GitLG tips"))
+    Ok(build_output(text, "GitGraph tips"))
 }
 
 fn parse_limit_arg(arg: Option<&str>) -> Result<usize, String> {
@@ -335,7 +379,7 @@ fn parse_limit_arg(arg: Option<&str>) -> Result<usize, String> {
 
 fn parse_search_args(args: Vec<String>) -> Result<ParsedSearchArgs, String> {
     if args.is_empty() {
-        return Err("usage: /gitlg-search [limit=200] [path=src/file.rs] <query>".to_string());
+        return Err("usage: /gitgraph-search [limit=200] [path=src/file.rs] <query>".to_string());
     }
     let mut limit: Option<usize> = None;
     let mut file_path = None;
@@ -358,7 +402,7 @@ fn parse_search_args(args: Vec<String>) -> Result<ParsedSearchArgs, String> {
     }
     let query = query_parts.join(" ").trim().to_string();
     if query.is_empty() {
-        return Err("usage: /gitlg-search [limit=200] [path=src/file.rs] <query>".to_string());
+        return Err("usage: /gitgraph-search [limit=200] [path=src/file.rs] <query>".to_string());
     }
     Ok(ParsedSearchArgs {
         limit: limit.unwrap_or(DEFAULT_LIMIT),
@@ -376,7 +420,7 @@ struct ParsedSearchArgs {
 
 fn parse_blame_args(args: Vec<String>) -> Result<(String, usize), String> {
     if args.len() < 2 {
-        return Err("usage: /gitlg-blame <path> <line>".to_string());
+        return Err("usage: /gitgraph-blame <path> <line>".to_string());
     }
     let file = args[0].clone();
     let line = args[1]
@@ -399,7 +443,7 @@ struct ParsedActionArgs {
 fn parse_action_args(args: Vec<String>) -> Result<ParsedActionArgs, String> {
     let Some((template_id, tail)) = args.split_first() else {
         return Err(
-            "usage: /gitlg-action <action-id> KEY=VALUE +opt:<option-id> (e.g. BRANCH_NAME=main)"
+            "usage: /gitgraph-action <action-id> KEY=VALUE +opt:<option-id> (e.g. BRANCH_NAME=main)"
                 .to_string(),
         );
     };
@@ -461,7 +505,7 @@ fn map_context_placeholder(context: &mut ActionContext, key: &str, value: &str) 
 fn lookup_dynamic_placeholder(
     repo_root: &str,
     placeholder: &str,
-) -> gitlg_core::Result<Option<String>> {
+) -> gitgraph_core::Result<Option<String>> {
     if let Some(key) = placeholder.strip_prefix("GIT_CONFIG:") {
         let out = run_git_command(
             repo_root,
@@ -542,9 +586,9 @@ fn run_shell_command(repo_root: &str, script: &str) -> Result<zed::process::Outp
     }
 }
 
-fn render_rows(repo_root: &str, rows: &[gitlg_core::GraphRow], subtitle: &str) -> String {
+fn render_rows(repo_root: &str, rows: &[gitgraph_core::GraphRow], subtitle: &str) -> String {
     let mut out = String::new();
-    out.push_str(&format!("# GitLG log for `{}`\n\n", repo_root));
+    out.push_str(&format!("# GitGraph log for `{}`\n\n", repo_root));
     out.push_str(subtitle);
     out.push_str("\n\n");
 
@@ -602,7 +646,7 @@ fn render_blame_text(repo_root: &str, file: &str, line: usize, raw: &str) -> Str
         }
     }
     [
-        format!("# GitLG blame for `{}`", repo_root),
+        format!("# GitGraph blame for `{}`", repo_root),
         String::new(),
         format!("file: `{}`", file),
         format!("line: `{}`", line),
@@ -625,4 +669,4 @@ fn build_output(text: String, label: &str) -> zed::SlashCommandOutput {
     }
 }
 
-zed::register_extension!(GitLgZedExtension);
+zed::register_extension!(GitGraphZedExtension);

@@ -9,7 +9,7 @@ use async_openai::types::responses::{
     CreateResponse, CreateResponseArgs, Reasoning, ReasoningEffort, ResponseStreamEvent,
 };
 use clap::{Args, Parser, Subcommand};
-use gitlg_core::{
+use gitgraph_core::{
     ActionContext, ActionRequest, CommitSearchQuery, GitLgService, GitOutput, GitRunner,
     GraphQuery, StateStore,
 };

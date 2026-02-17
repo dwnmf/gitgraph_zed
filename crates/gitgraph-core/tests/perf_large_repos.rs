@@ -1,7 +1,7 @@
 use std::time::Instant;
 
-use gitlg_core::log_parser::{FIELD_SEP, RECORD_SEP, build_graph_rows, parse_git_log_records};
-use gitlg_core::{CommitSearchQuery, filter_commits};
+use gitgraph_core::log_parser::{FIELD_SEP, RECORD_SEP, build_graph_rows, parse_git_log_records};
+use gitgraph_core::{CommitSearchQuery, filter_commits};
 
 const DEFAULT_10K_THRESHOLD_MS: u128 = 4_000;
 const DEFAULT_50K_THRESHOLD_MS: u128 = 20_000;

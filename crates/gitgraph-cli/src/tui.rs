@@ -14,7 +14,7 @@ use crossterm::execute;
 use crossterm::terminal::{
     EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode,
 };
-use gitlg_core::{CommitSearchQuery, FileChange, GitLgService, GraphData, GraphQuery, GraphRow};
+use gitgraph_core::{CommitSearchQuery, FileChange, GitLgService, GraphData, GraphQuery, GraphRow};
 use ratatui::layout::{Constraint, Direction, Layout, Margin, Rect};
 use ratatui::style::{Color, Modifier, Style};
 use ratatui::text::{Line, Span, Text};
@@ -566,7 +566,7 @@ impl<'a> TuiApp<'a> {
             text: self.search_input.clone(),
             ..CommitSearchQuery::default()
         };
-        self.filtered_rows = gitlg_core::filter_commits(&self.graph.commits, &query)
+        self.filtered_rows = gitgraph_core::filter_commits(&self.graph.commits, &query)
             .map_err(|e| anyhow!("search failed: {e}"))?;
         if self.filtered_rows.is_empty() {
             self.list_state.select(None);

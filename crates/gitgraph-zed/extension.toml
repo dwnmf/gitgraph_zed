@@ -1,0 +1,57 @@
+id = "gitgraph-zed"
+name = "GitGraph Zed"
+description = "Git graph and git actions powered by GitGraph core"
+version = "0.1.0"
+schema_version = 1
+authors = ["GitGraph Team"]
+repository = "https://github.com/dwnmf/GitTree_Zed"
+
+[slash_commands.gitgraph-log]
+description = "Show recent git history graph summary for the current worktree"
+requires_argument = false
+
+[slash_commands.gitgraph-search]
+description = "Search commits in history. Usage: /gitgraph-search [limit=200] [path=src/file.rs] query"
+requires_argument = true
+
+[slash_commands.gitgraph-actions]
+description = "List available GitGraph action ids"
+requires_argument = false
+
+[slash_commands.gitgraph-action]
+description = "Run GitGraph action. Usage: /gitgraph-action <id> KEY=VALUE +opt:<option-id>"
+requires_argument = true
+
+[slash_commands.gitgraph-blame]
+description = "Show blame for one line. Usage: /gitgraph-blame <path> <line>"
+requires_argument = true
+
+[slash_commands.gitgraph-tips]
+description = "Show GitGraph usage tips for Zed + CLI/TUI"
+requires_argument = false
+
+# Legacy aliases (backward compatibility)
+[slash_commands.gitlg-log]
+description = "Deprecated alias of /gitgraph-log"
+requires_argument = false
+
+[slash_commands.gitlg-search]
+description = "Deprecated alias of /gitgraph-search"
+requires_argument = true
+
+[slash_commands.gitlg-actions]
+description = "Deprecated alias of /gitgraph-actions"
+requires_argument = false
+
+[slash_commands.gitlg-action]
+description = "Deprecated alias of /gitgraph-action"
+requires_argument = true
+
+[slash_commands.gitlg-blame]
+description = "Deprecated alias of /gitgraph-blame"
+requires_argument = true
+
+[slash_commands.gitlg-tips]
+description = "Deprecated alias of /gitgraph-tips"
+requires_argument = false
+

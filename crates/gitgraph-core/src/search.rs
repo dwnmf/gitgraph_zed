@@ -33,7 +33,9 @@ pub fn filter_commits(rows: &[GraphRow], query: &CommitSearchQuery) -> Result<Ve
     Ok(rows
         .iter()
         .filter(|row| {
-            search_parts(row, query, |part| part.to_lowercase().contains(&normalized_needle))
+            search_parts(row, query, |part| {
+                part.to_lowercase().contains(&normalized_needle)
+            })
         })
         .cloned()
         .collect())

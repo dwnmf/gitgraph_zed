@@ -1,12 +1,12 @@
 [
   {
-    "label": "GitLG TUI",
+    "label": "GitGraph TUI",
     "command": "cargo",
     "args": [
       "run",
       "-q",
       "-p",
-      "gitlg-cli",
+      "gitgraph-cli",
       "--",
       "tui",
       "--repo",
@@ -24,14 +24,14 @@
     "hide": "never"
   },
   {
-    "label": "GitLG TUI (release)",
+    "label": "GitGraph TUI (release)",
     "command": "cargo",
     "args": [
       "run",
       "--release",
       "-q",
       "-p",
-      "gitlg-cli",
+      "gitgraph-cli",
       "--",
       "tui",
       "--repo",
@@ -49,3 +49,4 @@
     "hide": "never"
   }
 ]
+

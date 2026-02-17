@@ -47,7 +47,7 @@ impl StateStore {
     }
 
     pub fn default_location() -> Result<PathBuf> {
-        let project_dirs = ProjectDirs::from("dev", "GitLG", "gitlg")
+        let project_dirs = ProjectDirs::from("dev", "GitGraph", "gitgraph")
             .ok_or_else(|| GitLgError::State("cannot resolve project directories".to_string()))?;
         Ok(project_dirs.config_dir().join(DEFAULT_STATE_FILENAME))
     }

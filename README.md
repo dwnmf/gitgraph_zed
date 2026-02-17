@@ -3,9 +3,9 @@
 GitTree Zed is a Rust workspace with Git history tooling for CLI, TUI, and Zed editor integration.
 
 It includes:
-- `gitlg-core`: reusable domain/service layer for git graph, search, blame, actions, and state.
-- `gitlg-cli`: terminal commands and interactive TUI (`gitgraph`).
-- `gitlg-zed`: Zed extension (Wasm) with slash commands.
+- `gitgraph-core`: reusable domain/service layer for git graph, search, blame, actions, and state.
+- `gitgraph-cli`: terminal commands and interactive TUI (`gitgraph`).
+- `gitgraph-zed`: Zed extension (Wasm) with slash commands.
 
 <img width="3417" height="1339" alt="image" src="https://github.com/user-attachments/assets/8b4c403c-b544-42c9-aaf1-8405a7c19f8c" />
 
@@ -19,13 +19,13 @@ It includes:
 - Actions catalog (preview/run git actions)
 - Line blame (`blame`)
 - Persisted app state (`state show/set-repo/set-git-binary`)
-- Zed slash commands (`/gitlg-log`, `/gitlg-search`, `/gitlg-actions`, etc.)
+- Zed slash commands (`/gitgraph-log`, `/gitgraph-search`, `/gitgraph-actions`, etc.)
 
 ## Workspace Layout
 
-- `crates/gitlg-core`
-- `crates/gitlg-cli`
-- `crates/gitlg-zed`
+- `crates/gitgraph-core`
+- `crates/gitgraph-cli`
+- `crates/gitgraph-zed`
 
 ## Requirements
 
@@ -45,7 +45,7 @@ rustup default stable-x86_64-pc-windows-gnu
 Or run commands explicitly with GNU toolchain prefix:
 
 ```powershell
-cargo +stable-x86_64-pc-windows-gnu check -p gitlg-cli
+cargo +stable-x86_64-pc-windows-gnu check -p gitgraph-cli
 cargo +stable-x86_64-pc-windows-gnu test --workspace
 ```
 
@@ -60,14 +60,14 @@ cargo test --workspace
 Check CLI only:
 
 ```powershell
-cargo check -p gitlg-cli
+cargo check -p gitgraph-cli
 ```
 
 Build Zed extension artifact:
 
 ```powershell
 rustup target add wasm32-wasip2
-cargo build -p gitlg-zed --target wasm32-wasip2
+cargo build -p gitgraph-zed --target wasm32-wasip2
 ```
 
 ## Install CLI
@@ -75,7 +75,7 @@ cargo build -p gitlg-zed --target wasm32-wasip2
 Install `gitgraph` globally from local source:
 
 ```powershell
-cargo install --path crates/gitlg-cli --bin gitgraph
+cargo install --path crates/gitgraph-cli --bin gitgraph
 ```
 
 After install:
@@ -95,7 +95,7 @@ gitgraph
 If not inside a repo, pass `--repo`:
 
 ```powershell
-cargo run -p gitlg-cli -- tui --repo D:\REALPROJECTS\GitLG
+cargo run -p gitgraph-cli -- tui --repo D:\REALPROJECTS\GitGraph
 ```
 
 ## Command Reference
@@ -126,7 +126,7 @@ Options:
 Example:
 
 ```powershell
-cargo run -p gitlg-cli -- graph --repo D:\REALPROJECTS\GitLG --limit 200 --all --pretty
+cargo run -p gitgraph-cli -- graph --repo D:\REALPROJECTS\GitGraph --limit 200 --all --pretty
 ```
 
 ### `tui`
@@ -146,7 +146,7 @@ Options:
 Example:
 
 ```powershell
-cargo run -p gitlg-cli -- tui --repo D:\REALPROJECTS\GitLG --graph-style ascii --max-patch-lines 2500 --limit 900
+cargo run -p gitgraph-cli -- tui --repo D:\REALPROJECTS\GitGraph --graph-style ascii --max-patch-lines 2500 --limit 900
 ```
 
 ### `search`
@@ -166,8 +166,8 @@ Options:
 Examples:
 
 ```powershell
-cargo run -p gitlg-cli -- search --repo D:\REALPROJECTS\GitLG --text checkout --limit 300 --pretty
-cargo run -p gitlg-cli -- search --repo D:\REALPROJECTS\GitLG --file src/main.rs --text "run loop" --limit 500 --pretty
+cargo run -p gitgraph-cli -- search --repo D:\REALPROJECTS\GitGraph --text checkout --limit 300 --pretty
+cargo run -p gitgraph-cli -- search --repo D:\REALPROJECTS\GitGraph --file src/main.rs --text "run loop" --limit 500 --pretty
 ```
 
 ### `blame`
@@ -182,7 +182,7 @@ Options:
 Example:
 
 ```powershell
-cargo run -p gitlg-cli -- blame --repo D:\REALPROJECTS\GitLG --file README.md --line 1
+cargo run -p gitgraph-cli -- blame --repo D:\REALPROJECTS\GitGraph --file README.md --line 1
 ```
 
 ### `commit-desc`
@@ -212,7 +212,7 @@ Example (OpenAI API key mode):
 
 ```powershell
 $env:OPENAI_API_KEY="sk-..."
-cargo run -p gitlg-cli -- commit-desc --repo D:\REALPROJECTS\GitLG --model gpt-5-mini --reasoning-effort medium --base-url https://api.openai.com/v1 --wire-api responses
+cargo run -p gitgraph-cli -- commit-desc --repo D:\REALPROJECTS\GitGraph --model gpt-5-mini --reasoning-effort medium --base-url https://api.openai.com/v1 --wire-api responses
 ```
 
 ### `actions`
@@ -227,10 +227,10 @@ Subcommands:
 Examples:
 
 ```powershell
-cargo run -p gitlg-cli -- actions list
-cargo run -p gitlg-cli -- actions preview --id checkout --param BRANCH_NAME=main
-cargo run -p gitlg-cli -- actions run --repo D:\REALPROJECTS\GitLG --id checkout --param BRANCH_NAME=master
-cargo run -p gitlg-cli -- actions preview --id merge --ctx SOURCE_BRANCH_NAME=feature --ctx TARGET_BRANCH_NAME=main
+cargo run -p gitgraph-cli -- actions list
+cargo run -p gitgraph-cli -- actions preview --id checkout --param BRANCH_NAME=main
+cargo run -p gitgraph-cli -- actions run --repo D:\REALPROJECTS\GitGraph --id checkout --param BRANCH_NAME=master
+cargo run -p gitgraph-cli -- actions preview --id merge --ctx SOURCE_BRANCH_NAME=feature --ctx TARGET_BRANCH_NAME=main
 ```
 
 ### `state`
@@ -245,9 +245,9 @@ Subcommands:
 Examples:
 
 ```powershell
-cargo run -p gitlg-cli -- state show
-cargo run -p gitlg-cli -- state set-repo D:\REALPROJECTS\GitLG
-cargo run -p gitlg-cli -- state set-git-binary git
+cargo run -p gitgraph-cli -- state show
+cargo run -p gitgraph-cli -- state set-repo D:\REALPROJECTS\GitGraph
+cargo run -p gitgraph-cli -- state set-git-binary git
 ```
 
 ### `validate-repo`
@@ -255,7 +255,7 @@ cargo run -p gitlg-cli -- state set-git-binary git
 Quick repo validation by loading a minimal graph.
 
 ```powershell
-cargo run -p gitlg-cli -- validate-repo --repo D:\REALPROJECTS\GitLG
+cargo run -p gitgraph-cli -- validate-repo --repo D:\REALPROJECTS\GitGraph
 ```
 
 ## TUI Controls
@@ -385,7 +385,7 @@ If an operation fails, popup shows full error chain.
 
 ## State Storage
 
-Persistent app state is stored via `directories::ProjectDirs("dev", "GitLG", "gitlg")` in `state.json`.
+Persistent app state is stored via `directories::ProjectDirs("dev", "GitGraph", "gitgraph")` in `state.json`.
 
 State includes:
 - selected repo path
@@ -400,24 +400,24 @@ Use `state show` to inspect current values.
 ## Zed Extension
 
 Extension manifest:
-- `crates/gitlg-zed/extension.toml`
+- `crates/gitgraph-zed/extension.toml`
 
 Zed tasks:
 - `.zed/tasks.json`
-- Use `task: spawn` and select `GitLG TUI` or `GitLG TUI (release)`
+- Use `task: spawn` and select `GitGraph TUI` or `GitGraph TUI (release)`
 
 Implemented slash commands:
-- `/gitlg-log [limit]`
-- `/gitlg-search [limit=200] [path=src/file.rs] query`
-- `/gitlg-actions`
-- `/gitlg-action <id> KEY=VALUE +opt:<option-id>`
-- `/gitlg-blame <path> <line>`
-- `/gitlg-tips`
+- `/gitgraph-log [limit]`
+- `/gitgraph-search [limit=200] [path=src/file.rs] query`
+- `/gitgraph-actions`
+- `/gitgraph-action <id> KEY=VALUE +opt:<option-id>`
+- `/gitgraph-blame <path> <line>`
+- `/gitgraph-tips`
 
 ## Performance Tests
 
 ```powershell
-cargo test -p gitlg-core perf_pipeline_ -- --ignored --nocapture
+cargo test -p gitgraph-core perf_pipeline_ -- --ignored --nocapture
 ```
 
 ## Troubleshooting
@@ -450,3 +450,4 @@ Client already retries with streaming mode automatically for providers requiring
 ## License
 
 MIT
+

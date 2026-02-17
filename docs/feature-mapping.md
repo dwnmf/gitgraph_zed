@@ -1,4 +1,4 @@
-# Feature Mapping: GitLG -> GitTree_Zed
+# Feature Mapping: GitGraph -> GitTree_Zed
 
 Date: 2026-02-16
 
@@ -20,7 +20,7 @@ Date: 2026-02-16
 - Search by file contents in historical snapshots: `Done`
 
 ## Actions
-- Load full default action catalog from GitLG JSON: `Done`
+- Load full default action catalog from GitGraph JSON: `Done`
 - Scopes (`global`, `commit`, `commits`, `stash`, `tag`, `branch`, `branch-drop`): `Done`
 - Placeholder expansion (`{...}`, `$1..$N`): `Done`
 - Dynamic placeholders (`{GIT_CONFIG:...}`, `{GIT_EXEC:...}`): `Done`
@@ -37,12 +37,12 @@ Date: 2026-02-16
 
 ## Zed Extension
 - Dev extension manifest and wasm build: `Done`
-- `/gitlg-log`: `Done`
-- `/gitlg-search`: `Done`
-- `/gitlg-actions`: `Done`
-- `/gitlg-action`: `Done`
-- `/gitlg-blame`: `Done`
-- `/gitlg-tips`: `Done`
+- `/gitgraph-log`: `Done`
+- `/gitgraph-search`: `Done`
+- `/gitgraph-actions`: `Done`
+- `/gitgraph-action`: `Done`
+- `/gitgraph-blame`: `Done`
+- `/gitgraph-tips`: `Done`
 - Native rich graph panel inside Zed sidebar/editor area: `Blocked`
 Reason: current Zed extension API surface does not provide VS Code webview-equivalent custom UI embedding for this use case.
 
@@ -57,5 +57,6 @@ Reason: current Zed extension API surface does not provide VS Code webview-equiv
 ## Testing / Verification
 - Unit tests for parser/search/actions/state/service: `Done`
 - Workspace test run: `Done`
-- Wasm build for `gitlg-zed`: `Done`
+- Wasm build for `gitgraph-zed`: `Done`
 - Large-repo performance benchmark suite (10k/50k with thresholds): `Done`
+
