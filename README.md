@@ -76,21 +76,22 @@ cargo build -p gitgraph-zed --target wasm32-wasip2
 
 ## Install CLI
 
-Install `gitgraph` globally from local source:
+Install `gitzed` (and `gitgraph` alias) globally from local source:
 
 ```powershell
-cargo install --path crates/gitgraph-cli --bin gitgraph
+cargo install --path crates/gitgraph-cli --bin gitzed --bin gitgraph
 ```
 
 Install from GitHub:
 
 ```powershell
-cargo install --git https://github.com/dwnmf/gitgraph_zed.git --package gitgraph-cli --bin gitgraph
+cargo install --git https://github.com/dwnmf/gitgraph_zed.git --package gitgraph-cli --bin gitzed --bin gitgraph
 ```
 
 After install:
 
 ```powershell
+gitzed --help
 gitgraph --help
 ```
 
@@ -99,6 +100,7 @@ gitgraph --help
 If you are already inside a git repository:
 
 ```powershell
+gitzed
 gitgraph
 ```
 

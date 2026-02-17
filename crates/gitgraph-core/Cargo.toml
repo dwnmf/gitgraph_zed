@@ -3,6 +3,8 @@ name = "gitgraph-core"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+description = "Core library for GitGraph: git graph parsing, search, actions, and state"
+repository = "https://github.com/dwnmf/gitgraph_zed"
 
 [dependencies]
 directories.workspace = true

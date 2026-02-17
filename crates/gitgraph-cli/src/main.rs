@@ -19,7 +19,6 @@ use tokio_stream::StreamExt;
 mod tui;
 
 #[derive(Debug, Parser)]
-#[command(name = "gitgraph")]
 #[command(about = "GitGraph Rust CLI", long_about = None)]
 struct Cli {
     #[command(subcommand)]

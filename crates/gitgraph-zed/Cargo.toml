@@ -3,9 +3,11 @@ name = "gitgraph-zed"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+description = "GitGraph extension crate for Zed editor commands"
+repository = "https://github.com/dwnmf/gitgraph_zed"
 
 [dependencies]
-gitgraph-core = { path = "../gitgraph-core" }
+gitgraph-core = { path = "../gitgraph-core", version = "0.1.0" }
 serde.workspace = true
 serde_json.workspace = true
 shlex.workspace = true

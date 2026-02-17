@@ -3,11 +3,17 @@ name = "gitgraph-cli"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+description = "GitGraph terminal app (TUI + CLI) with commit description generation"
+repository = "https://github.com/dwnmf/gitgraph_zed"
 default-run = "gitgraph"
 autobins = false
 
 [[bin]]
 name = "gitgraph"
+path = "src/main.rs"
+
+[[bin]]
+name = "gitzed"
 path = "src/main.rs"
 
 [dependencies]
@@ -21,4 +27,4 @@ serde_json.workspace = true
 tokio.workspace = true
 tokio-stream.workspace = true
 toml.workspace = true
-gitgraph-core = { path = "../gitgraph-core" }
+gitgraph-core = { path = "../gitgraph-core", version = "0.1.0" }
