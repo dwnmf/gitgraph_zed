@@ -76,6 +76,12 @@ cargo build -p gitgraph-zed --target wasm32-wasip2
 
 ## Install CLI
 
+Install from crates.io (recommended):
+
+```powershell
+cargo install gitgraph-cli --bin gitzed --bin gitgraph
+```
+
 Install `gitzed` (and `gitgraph` alias) globally from local source:
 
 ```powershell
@@ -94,6 +100,11 @@ After install:
 gitzed --help
 gitgraph --help
 ```
+
+Published crates:
+- `https://crates.io/crates/gitgraph-core`
+- `https://crates.io/crates/gitgraph-cli`
+- `https://crates.io/crates/gitgraph-zed`
 
 ## Quick Start
 
