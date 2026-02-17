@@ -1,6 +1,10 @@
-# GitTree Zed (Rust)
+# GitGraph (Rust)
 
-GitTree Zed is a Rust workspace with Git history tooling for CLI, TUI, and Zed editor integration.
+GitGraph is a Rust workspace with Git history tooling for CLI, TUI, and Zed editor integration.
+
+Repository:
+- Canonical: `https://github.com/dwnmf/gitgraph_zed`
+- Legacy redirect: `https://github.com/dwnmf/GitTree_Zed`
 
 It includes:
 - `gitgraph-core`: reusable domain/service layer for git graph, search, blame, actions, and state.
@@ -76,6 +80,12 @@ Install `gitgraph` globally from local source:
 
 ```powershell
 cargo install --path crates/gitgraph-cli --bin gitgraph
+```
+
+Install from GitHub:
+
+```powershell
+cargo install --git https://github.com/dwnmf/gitgraph_zed.git --package gitgraph-cli --bin gitgraph
 ```
 
 After install:
@@ -413,6 +423,14 @@ Implemented slash commands:
 - `/gitgraph-action <id> KEY=VALUE +opt:<option-id>`
 - `/gitgraph-blame <path> <line>`
 - `/gitgraph-tips`
+
+Legacy aliases (still supported for compatibility):
+- `/gitlg-log`
+- `/gitlg-search`
+- `/gitlg-actions`
+- `/gitlg-action`
+- `/gitlg-blame`
+- `/gitlg-tips`
 
 ## Performance Tests
 
